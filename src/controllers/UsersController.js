@@ -55,6 +55,7 @@ class UsersController {
 
     user.name = name ?? user.name
     user.email = email ?? user.email
+    user.updated_at = knex.fn.now()
 
     if (password && !oldPassword) {
       throw new AppError(
