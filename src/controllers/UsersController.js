@@ -73,9 +73,9 @@ class UsersController {
       user.password = await hash(password, 8)
     }
 
-    const retorno = await knex('users').where({ id }).update(user)
+    await knex('users').where({ id }).update(user)
 
-    return res.json(retorno)
+    return res.json()
   }
 
   async delete(req, res) {
