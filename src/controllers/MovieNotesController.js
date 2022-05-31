@@ -4,8 +4,28 @@ const { hash, compare } = require('bcryptjs')
 
 class MovieNotesController {
   async index(req, res) {
-    const movie_notes = await knex('movie_notes')
-    return res.json(movie_notes)
+    const { title, tags } = req.query
+
+    let notes
+
+    if (tags) {
+      const filterTags = tags.split(',').map(tag => tag.trim())
+
+      notes = await knex('movie_tags')
+        .select([
+          'movie_notes.id',
+          'movie_notes.title',
+          'movie_notes.description',
+          'movie_notes.rating',
+          'movie_tags.name'
+        ])
+        .whereLike('movie_notes.title', `%${title}%`)
+        .whereIn('name', filterTags)
+        .innerJoin('movie_notes', 'movie_notes.id', 'movie_tags.note_id')
+    } else {
+      notes = await knex('movie_notes').whereLike('title', `%${title}%`)
+    }
+    return res.json(notes)
   }
 
   async show(req, res) {
