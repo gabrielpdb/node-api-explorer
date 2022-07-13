@@ -23,6 +23,6 @@ app.use((error, request, response, next) => {
     .json({ status: 'error', message: 'Internal server error' })
 })
 
-const PORT = 3333
+const PORT = 3335
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
