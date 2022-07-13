@@ -1,10 +1,13 @@
 const { Router } = require('express')
 
 const MovieNotesController = require('../controllers/MovieNotesController')
+const ensureAuthenticated = require('../middlewares/ensureAuthenticated')
 
 const movieNotesRoutes = Router()
 
 const controller = new MovieNotesController()
+
+movieNotesRoutes.use(ensureAuthenticated)
 
 movieNotesRoutes.get('/', controller.index)
 movieNotesRoutes.get('/:id', controller.show)
