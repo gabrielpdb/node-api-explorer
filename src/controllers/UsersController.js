@@ -3,21 +3,8 @@ const AppError = require('../utils/AppError')
 const { hash, compare } = require('bcryptjs')
 
 class UsersController {
-  async index(req, res) {
-    const users = await knex('users')
-    return res.json(users)
-  }
-
-  async show(req, res) {
-    const { id } = req.params
-
-    const user = await knex('users').where({ id })
-
-    return res.json(user)
-  }
-
   async create(req, res) {
-    const { name, email, password, avatar } = req.body
+    const { name, email, password } = req.body
 
     const hashedPassword = await hash(password, 8)
 
@@ -29,19 +16,17 @@ class UsersController {
     const user_id = await knex('users').insert({
       name,
       email,
-      password: hashedPassword,
-      avatar
+      password: hashedPassword
     })
 
-    console.log(user_id)
-    return res.json({ user_id })
+    return res.status(201).json({ user_id })
   }
 
   async update(req, res) {
-    const { id } = req.params
-    const { name, email, avatar, password, oldPassword } = req.body
+    const user_id = req.user.id
+    const { name, email, password, oldPassword } = req.body
 
-    const user = await knex('users').where({ id }).first()
+    const user = await knex('users').where({ id: user_id }).first()
 
     if (!user) {
       throw new AppError('Usuário não encontrado')
@@ -73,21 +58,7 @@ class UsersController {
       user.password = await hash(password, 8)
     }
 
-    await knex('users').where({ id }).update(user)
-
-    return res.json()
-  }
-
-  async delete(req, res) {
-    const { id } = req.params
-
-    const user = await knex('users').where({ id }).first()
-
-    if (!user) {
-      throw new AppError('Usuário não encontrado')
-    }
-
-    await knex('users').where({ id }).delete()
+    await knex('users').where({ id: user_id }).update(user)
 
     return res.json()
   }
