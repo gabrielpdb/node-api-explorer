@@ -54,15 +54,17 @@ class MovieNotesController {
     movie_note.tags = tags
     const user = await knex('users')
       .where({ id: movie_note.user_id })
-      .select(['name'])
+      .select(['name', 'avatar'])
       .first()
     movie_note.user_name = user.name
+    movie_note.user_avatar = user.avatar
 
     return res.json(movie_note)
   }
 
   async create(req, res) {
-    const { title, description, rating, user_id, tags } = req.body
+    const { title, description, rating, tags } = req.body
+    const user_id = req.user.id
 
     const noteAlreadyExists = await knex('movie_notes').where({ title }).first()
 
